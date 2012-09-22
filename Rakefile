@@ -1,5 +1,5 @@
-require 'bundler'
-Bundler::GemHelper.install_tasks
+#require 'bundler'
+#Bundler::GemHelper.install_tasks
 
 task :default => :build
 
@@ -33,7 +33,11 @@ def install_use_gems(target_dir)
     'GEM_PATH' => '',
   }
   USE_GEMS.each {|gem|
-    system env, "gem install '#{gem}' --no-rdoc --no-ri"
+    env.each_pair {|k,v|
+      ENV[k] = v
+    }
+    #system env, "gem install '#{gem}' --no-rdoc --no-ri"
+    system "gem install '#{gem}' --no-rdoc --no-ri"
   }
 end
 
@@ -52,7 +56,12 @@ def install_erb_resource(resource_name, target_path, mode, variables)
   erb_raw = File.read resource_path(resource_name)
 
   ctx = Object.new
-  variables.each_pair {|k,v| ctx.define_singleton_method(k) { v } }
+  variables.each_pair {|k,v|
+    (class<<ctx;self;end).module_eval do
+      define_method(k) { v }
+    end
+    #ctx.define_singleton_method(k) { v }
+  }
   data = ERB.new(erb_raw).result(ctx.instance_eval("binding"))
 
   File.open(target_path, "w") do |f|

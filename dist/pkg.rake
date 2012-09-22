@@ -1,6 +1,7 @@
 
 desc "build Mac OS X pkg package"
-task 'pkg:build' => :build do
+#task 'pkg:build' => :build do
+task 'pkg:build' do #=> :build do
   create_build_dir('pkg') do |dir|
     FileUtils.mkdir_p "bundle"
     FileUtils.mkdir_p "bundle/Resources"
