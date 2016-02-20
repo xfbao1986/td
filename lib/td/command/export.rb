@@ -1,7 +1,7 @@
 
 module TreasureData
 module Command
-  SUPPORTED_FORMATS = %W[json.gz line-json.gz tsv.gz]
+  SUPPORTED_FORMATS = %W[json.gz line-json.gz tsv.gz jsonl.gz]
 
   def table_export(op)
     from = nil
