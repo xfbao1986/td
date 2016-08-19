@@ -213,14 +213,19 @@ module Command
 
   def connector_update(op)
     config_diff_file = nil
-    op.on('--config-diff CONFIG_DIFF', "config_diff") { |s| config_diff_file = s }
+    cron = nil
+    op.on('--config-diff CONFIG_DIFF', "config_diff file") { |s| config_diff_file = s }
+    op.on('--cron CRON', "cron time and date fields") { |s| cron = s }
     name, config_file = op.cmd_parse
 
-    config = prepare_bulkload_job_config(config_file)
-    config_diff = prepare_bulkload_job_config(config_diff_file)
+    settings = {}
+    settings[:config] = prepare_bulkload_job_config(config_file) if config_file
+    settings[:config_diff] = prepare_bulkload_job_config(config_diff_file) if config_diff_file
+    settings[:cron] = cron if cron
+    op.cmd_usage 'nothing to update' if settings.empty?
 
     client = get_client()
-    session = client.bulk_load_update(name, {config: config, config_diff: config_diff})
+    session = client.bulk_load_update(name, settings)
     dump_connector_session(session)
   end
 
